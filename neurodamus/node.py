@@ -1469,9 +1469,9 @@ class Node:
         # Clear BBSaveState
         self._bbss.ignore()
 
-        # There should be no more datahandles to the old model. Hence,
-        # the stable identifiers can be deleted now.
-        Nd.clear_deferred_deletion_vectors()
+        # # There should be no more datahandles to the old model. Hence,
+        # # the stable identifiers can be deleted now.
+        # Nd.clear_deferred_deletion_vectors()
 
         # Shrink ArrayPools holding mechanism's data in NEURON
         pool_shrink()
