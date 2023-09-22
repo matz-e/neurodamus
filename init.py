@@ -5,8 +5,11 @@ Copyright (c) 2018 Blue Brain Project, EPFL.
 All rights reserved
 """
 import sys
+import os
 from neurodamus import commands
 from neuron import h
+
+import time
 
 
 def main():
@@ -32,5 +35,18 @@ def main():
 
 
 if __name__ == "__main__":
-    # Returns exit code and calls MPI.Finalize
-    h.quit(main())
+    import memray
+    memray_file = os.getenv("MEMRAY_OUTPUT_FILE", default="output_memray.bin")
+    memray_mode = os.getenv("MEMRAY_MODE")
+
+    if memray_mode == "off":
+        exit_code = main()
+
+    else:
+        memray_native_traces = memray_mode.lower() == "native_traces"
+        with memray.Tracker(memray_file, native_traces=memray_native_traces):
+            # Returns exit code and calls MPI.Finalize
+            exit_code = main()
+            time.sleep(10)
+
+    sys.exit(exit_code)

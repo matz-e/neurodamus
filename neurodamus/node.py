@@ -2,6 +2,7 @@
 # Copyright 2018 - Blue Brain Project, EPFL
 
 from __future__ import absolute_import
+import time
 import gc
 import glob
 import itertools
@@ -1486,6 +1487,9 @@ class Node:
         # Finally call malloc_trim to return all the freed pages back to the OS
         trim_memory()
         print_mem_usage()
+
+        memray_sleep = int(os.getenv("MEMRAY_SLEEP", default=20))
+        time.sleep(memray_sleep)
 
     # -------------------------------------------------------------------------
     #  output
