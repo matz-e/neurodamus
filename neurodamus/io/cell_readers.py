@@ -291,6 +291,7 @@ def load_sonata(circuit_conf, all_gids, stride=1, stride_offset=0, *,
         mtypes = node_pop.get_attribute("mtype", node_sel)
         emodels = [emodel.removeprefix("hoc:")
                    for emodel in node_pop.get_attribute("model_template", node_sel)]
+
         if set(["exc_mini_frequency", "inh_mini_frequency"]).issubset(attr_names):
             exc_mini_freqs = node_pop.get_attribute("exc_mini_frequency", node_sel)
             inh_mini_freqs = node_pop.get_attribute("inh_mini_frequency", node_sel)
