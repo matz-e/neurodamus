@@ -1503,7 +1503,7 @@ class Node:
 
     # -
     @mpi_no_errors
-    def clear_model(self, avoid_creating_objs=False, avoid_clearing_queues=True):
+    def clear_model(self, avoid_creating_objs=False, avoid_clearing_queues=True, avoid_clearing_nrn_threads=True):
         """Clears appropriate lists and other stored references.
         For use with intrinsic load balancing. After creating and evaluating the network using
         round robin distribution, we want to clear the cells and synapses in order to have a
@@ -1526,6 +1526,11 @@ class Node:
 
         # Clear BBSaveState
         self._bbss.ignore()
+
+        if not avoid_clearing_nrn_threads:
+            # Calls `nrn_threads_free` which deallocates thread
+            # related data that otherwise is leaked in each cycle.
+            Nd.hoc_dbg_nrn_threads_free()
 
         # Shrink ArrayPools holding mechanism's data in NEURON
         pool_shrink()
@@ -1875,7 +1880,7 @@ class Neurodamus(Node):
                 log_stage("==> CYCLE {} (OUT OF {})".format(cycle_i + 1, n_cycles))
                 logging.info("-" * 60)
 
-                self.clear_model()
+                self.clear_model(avoid_clearing_nrn_threads=False)
 
                 for cur_target in cur_targets:
                     self._target_manager.register_target(cur_target)
