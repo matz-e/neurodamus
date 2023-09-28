@@ -1209,6 +1209,9 @@ class Node:
         # This is incompatible with efficient caching atm AND Incompatible with mcd & Glut
         if not self._is_ngv_run:
             Nd.cvode.cache_efficient("ElectrodesPath" not in self._run_conf)
+        else:
+            Nd.cvode.cache_efficient(1)
+
         self._pc.set_maxstep(4)
         with timeit(name="stdinit"):
             Nd.stdinit()
@@ -1356,11 +1359,11 @@ class Node:
         CoreConfig.datadir = self._sim_corenrn_configure_datadir(corenrn_restore)
         fwd_skip = self._run_conf.get("ForwardSkip", 0) if not corenrn_restore else 0
 
-        if not corenrn_restore:
-            Nd.registerMapping(self._circuits.global_manager)
-            with self._coreneuron_ensure_all_ranks_have_gids(CoreConfig.datadir):
-                self._pc.nrnbbcore_write(CoreConfig.datadir)
-                MPI.barrier()  # wait for all ranks to finish corenrn data generation
+        # if not corenrn_restore:
+        Nd.registerMapping(self._circuits.global_manager)
+            # with self._coreneuron_ensure_all_ranks_have_gids(CoreConfig.datadir):
+            #     self._pc.nrnbbcore_write(CoreConfig.datadir)
+        MPI.barrier()  # wait for all ranks to finish corenrn data generation
 
         CoreConfig.write_sim_config(
             Nd.tstop,
@@ -1394,7 +1397,7 @@ class Node:
             self.sonata_spikes()
         if SimConfig.use_coreneuron:
             print_mem_usage()
-            self.clear_model(avoid_clearing_queues=False)
+            # self.clear_model(avoid_clearing_queues=False)
             self._run_coreneuron()
             if not SimConfig.is_sonata_config:
                 self.adapt_spikes("out.dat")
@@ -1531,8 +1534,8 @@ class Node:
         pool_shrink()
 
         # Free event queues in NEURON
-        if not avoid_clearing_queues:
-            free_event_queues()
+        # if not avoid_clearing_queues:
+        #     free_event_queues()
 
         # Garbage collect all Python objects without references
         gc.collect()
