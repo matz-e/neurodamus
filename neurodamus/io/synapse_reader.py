@@ -232,7 +232,8 @@ class SonataReader(SynapseReader):
     }
 
     def _open_file(self, src, population, _):
-        storage = libsonata.EdgeStorage(src)
+        hdf5_reader = libsonata.make_collective_reader(False, True)
+        storage = libsonata.EdgeStorage(src, hdf5_reader=hdf5_reader)
         if not population:
             assert len(storage.population_names) == 1
             population = next(iter(storage.population_names))
@@ -304,7 +305,7 @@ class SonataReader(SynapseReader):
         for (field, sonata_attr, is_optional) in sorted(fields_load_sonata):
             _populate(field, _read(sonata_attr, is_optional))
 
-        if sorted(self.custom_parameters):
+        if self.custom_parameters:
             self._load_params_custom(_populate, _read)
 
         # Extend Gids data with the additional requested fields
