@@ -241,8 +241,8 @@ class CellManagerBase(_CellManager):
     def _load_nodes_balance(self, loader_f, load_balancer):
         target_spec = self._target_spec
         if not load_balancer.valid_load_distribution(target_spec):
-            raise RuntimeError("No valid Load Balance info could be found or derived."
-                               "Please perform a full load balance.")
+            logging.warning("No valid Load Balance info could be found or derived. Proceeding RR")
+            return self._load_nodes(loader_f)
 
         logging.info(" -> Distributing target '%s' using Load-Balance", target_spec.name)
         self._binfo = load_balancer.load_balance_info(target_spec)
