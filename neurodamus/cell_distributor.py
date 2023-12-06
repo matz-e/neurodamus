@@ -642,7 +642,7 @@ class LoadBalance:
         )
 
     @run_only_rank0
-    def valid_load_distribution(self, target_spec) -> bool:
+    def valid_load_distribution(self, target_spec: TargetSpec) -> bool:
         """Checks whether we have valid load-balance files, attempting to
         derive from larger target distributions if possible.
         """
@@ -674,7 +674,7 @@ class LoadBalance:
         return False
 
     # -
-    def _reuse_cell_complexity(self, target_spec) -> bool:
+    def _reuse_cell_complexity(self, target_spec: TargetSpec) -> bool:
         """Check if the complexities of all target gids were already calculated
         for another target.
         """
@@ -685,7 +685,10 @@ class LoadBalance:
             return False
 
         logging.info("Attempt reusing cx files from other targets...")
-        target_gids = self._get_target_gids(target_spec)
+        target = self._target_manager.get_target(target_spec)
+        if target.is_void():
+            return False
+        target_gids = target.get_gids()
         cx_other = {}
 
         for previous_target in self._cx_targets:
