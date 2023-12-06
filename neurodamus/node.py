@@ -369,6 +369,9 @@ class Node:
         # Info about the cells to be distributed
         target_spec = TargetSpec(circuit.CircuitTarget)
         target = self.target_manager.get_target(target_spec)
+        if target.is_void:
+            logging.debug("Skipping void target %s", target_spec)
+            return None
 
         # Check / set load balance mode
         lb_mode = LoadBalance.select_lb_mode(SimConfig, self._run_conf, target)
